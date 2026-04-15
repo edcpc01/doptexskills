@@ -4,6 +4,15 @@ import { getFirestore, type Firestore } from "firebase-admin/firestore";
 
 let _app: App | null = null;
 
+function formatPrivateKey(key: string | undefined): string {
+  if (!key) return "";
+  // Remove surrounding quotes if present
+  let k = key.replace(/^["']|["']$/g, "");
+  // Replace literal \n with real newlines
+  k = k.replace(/\\n/g, "\n");
+  return k;
+}
+
 function getApp(): App {
   if (_app) return _app;
   if (getApps().length > 0) {
@@ -14,7 +23,7 @@ function getApp(): App {
   const serviceAccount: ServiceAccount = {
     projectId: process.env.FIREBASE_PROJECT_ID,
     clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-    privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n"),
+    privateKey: formatPrivateKey(process.env.FIREBASE_PRIVATE_KEY),
   };
 
   _app = initializeApp({ credential: cert(serviceAccount) });
