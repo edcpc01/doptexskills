@@ -1,0 +1,57 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
+
+:root {
+  --doptex-navy: #0F172A;
+  --doptex-blue: #2563EB;
+  --doptex-blue-light: #3B82F6;
+  --doptex-cyan: #06B6D4;
+  --doptex-green: #10B981;
+  --doptex-red: #EF4444;
+  --doptex-orange: #F97316;
+  --doptex-yellow: #EAB308;
+  --doptex-surface: #1E293B;
+  --doptex-surface-light: #334155;
+  --doptex-text: #F8FAFC;
+  --doptex-text-muted: #94A3B8;
+}
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--doptex-navy);
+  color: var(--doptex-text);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 700;
+}
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--doptex-navy); }
+::-webkit-scrollbar-thumb { background: var(--doptex-surface-light); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--doptex-blue); }
+
+.heatmap-cell {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.heatmap-cell:hover {
+  transform: scale(1.15);
+  z-index: 10;
+  box-shadow: 0 0 20px rgba(37, 99, 235, 0.4);
+}
+
+.glass-card {
+  background: rgba(30, 41, 59, 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4); }
+  50% { box-shadow: 0 0 0 8px rgba(37, 99, 235, 0); }
+}
+.pulse-pending { animation: pulse-glow 2s infinite; }
+
+@keyframes fill-bar { from { width: 0%; } }
+.animate-fill { animation: fill-bar 1s cubic-bezier(0.4, 0, 0.2, 1) forwards; }

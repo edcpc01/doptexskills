@@ -1,0 +1,99 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper: check user role from users collection
+    function getUserRole() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+    }
+
+    function isAdmin() {
+      return request.auth != null && getUserRole() == 'admin';
+    }
+
+    function isGestor() {
+      return request.auth != null && getUserRole() == 'gestor';
+    }
+
+    function isAdminOrGestor() {
+      return isAdmin() || isGestor();
+    }
+
+    function isOwner(colaboradorId) {
+      let userDoc = get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+      return userDoc.colaboradorId == colaboradorId;
+    }
+
+    // Users collection
+    match /users/{userId} {
+      allow read: if request.auth != null && (request.auth.uid == userId || isAdmin());
+      allow write: if isAdmin();
+    }
+
+    // Colaboradores
+    match /colaboradores/{docId} {
+      allow read: if request.auth != null;
+      allow create, update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Competencias
+    match /competencias/{docId} {
+      allow read: if request.auth != null;
+      allow write: if isAdmin();
+    }
+
+    // Avaliacoes de Competencia
+    match /avaliacoes_competencia/{docId} {
+      allow read: if request.auth != null && (
+        isAdminOrGestor() ||
+        isOwner(resource.data.colaboradorId)
+      );
+      allow create: if isAdminOrGestor();
+      allow update: if isAdminOrGestor();
+      allow delete: if isAdmin();
+    }
+
+    // Avaliação de Desempenho Mensal
+    match /avaliacao_desempenho/{docId} {
+      allow read: if request.auth != null && (
+        isAdminOrGestor() ||
+        isOwner(resource.data.colaboradorId)
+      );
+      allow create, update: if isAdminOrGestor();
+      allow delete: if isAdmin();
+    }
+
+    // Assiduidade
+    match /assiduidade/{docId} {
+      allow read: if request.auth != null && (
+        isAdminOrGestor() ||
+        isOwner(resource.data.colaboradorId)
+      );
+      allow create, update: if isAdminOrGestor();
+      allow delete: if isAdmin();
+    }
+
+    // Provas
+    match /provas/{docId} {
+      allow read: if request.auth != null && (
+        isAdminOrGestor() ||
+        isOwner(resource.data.colaboradorId)
+      );
+      allow create: if isAdminOrGestor();
+      allow update: if isAdminOrGestor();
+    }
+
+    // Config (pesos IDC, etc)
+    match /config/{docId} {
+      allow read: if request.auth != null;
+      allow write: if isAdmin();
+    }
+
+    // Audit log
+    match /audit_log/{docId} {
+      allow read: if isAdmin();
+      allow create: if request.auth != null;
+    }
+  }
+}

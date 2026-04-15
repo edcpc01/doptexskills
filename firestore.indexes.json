@@ -1,0 +1,45 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "avaliacoes_competencia",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "colaboradorId", "order": "ASCENDING" },
+        { "fieldPath": "status", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "avaliacoes_competencia",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "provaEnviada", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "avaliacoes_competencia",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "colaboradorId", "order": "ASCENDING" },
+        { "fieldPath": "dataAvaliacao", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "avaliacao_desempenho",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "colaboradorId", "order": "ASCENDING" },
+        { "fieldPath": "mes", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "assiduidade",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "colaboradorId", "order": "ASCENDING" },
+        { "fieldPath": "mes", "order": "DESCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}
