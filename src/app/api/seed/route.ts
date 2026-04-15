@@ -4,7 +4,23 @@ import { COLABORADORES_SEED, COMPETENCIAS_SEED, NOTAS_INICIAIS } from "@/lib/see
 
 export const dynamic = "force-dynamic";
 
-export async function POST() {
+async function runSeed() {
+  // Diagnostic check
+  const projectId = process.env.FIREBASE_PROJECT_ID;
+  const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
+  const privateKey = process.env.FIREBASE_PRIVATE_KEY;
+
+  if (!projectId || !clientEmail || !privateKey) {
+    return NextResponse.json({
+      error: "Missing env vars",
+      has_project_id: !!projectId,
+      has_client_email: !!clientEmail,
+      has_private_key: !!privateKey,
+      private_key_length: privateKey?.length || 0,
+      private_key_starts: privateKey?.substring(0, 40) || "EMPTY",
+    }, { status: 500 });
+  }
+
   try {
     const adminDb = getAdminDb();
     const batch = adminDb.batch();
@@ -17,7 +33,7 @@ export async function POST() {
       batch.set(ref, colab);
     }
 
-    // 2. Seed competencias (only operação group for now, matching NOTAS_INICIAIS order)
+    // 2. Seed competencias
     const operacaoComps = COMPETENCIAS_SEED.filter((c) =>
       c.cargos.some((cargo) => ["TECELAO", "AJUDANTE_PRODUCAO", "EXPEDIDOR", "AUX_MANUT_MECANICA"].includes(cargo))
     );
@@ -34,7 +50,6 @@ export async function POST() {
       });
     });
 
-    // Also seed remaining competencias (Líder, Supervisor)
     const otherComps = COMPETENCIAS_SEED.filter((c) =>
       !c.cargos.some((cargo) => ["TECELAO", "AJUDANTE_PRODUCAO", "EXPEDIDOR", "AUX_MANUT_MECANICA"].includes(cargo))
     );
@@ -48,7 +63,7 @@ export async function POST() {
       });
     });
 
-    // 3. Seed initial evaluations from NOTAS_INICIAIS
+    // 3. Seed initial evaluations
     for (const [nome, notas] of Object.entries(NOTAS_INICIAIS)) {
       const colabId = colabIds[nome];
       if (!colabId) continue;
@@ -85,8 +100,19 @@ export async function POST() {
       success: true,
       message: `Seeded ${COLABORADORES_SEED.length} colaboradores, ${COMPETENCIAS_SEED.length} competências, and initial evaluations.`,
     });
-  } catch (error) {
-    console.error("Seed error:", error);
-    return NextResponse.json({ error: String(error) }, { status: 500 });
+  } catch (error: any) {
+    return NextResponse.json({
+      error: error.message || String(error),
+      code: error.code || "unknown",
+      stack: error.stack?.split("\n").slice(0, 3),
+    }, { status: 500 });
   }
+}
+
+export async function POST() {
+  return runSeed();
+}
+
+export async function GET() {
+  return runSeed();
 }
