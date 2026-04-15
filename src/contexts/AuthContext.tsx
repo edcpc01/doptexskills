@@ -8,7 +8,7 @@ import {
   type User,
 } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
-import { auth, db } from "@/lib/firebase";
+import { getClientAuth, getClientDb } from "@/lib/firebase";
 import type { UserProfile, UserRole } from "@/lib/types";
 
 interface AuthContextType {
@@ -33,14 +33,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+    const authInstance = getClientAuth();
+    const dbInstance = getClientDb();
+
+    const unsubscribe = onAuthStateChanged(authInstance, async (firebaseUser) => {
       setUser(firebaseUser);
       if (firebaseUser) {
-        const profileDoc = await getDoc(doc(db, "users", firebaseUser.uid));
-        if (profileDoc.exists()) {
-          setProfile(profileDoc.data() as UserProfile);
-        } else {
-          // Default profile for new users
+        try {
+          const profileDoc = await getDoc(doc(dbInstance, "users", firebaseUser.uid));
+          if (profileDoc.exists()) {
+            setProfile(profileDoc.data() as UserProfile);
+          } else {
+            setProfile({
+              uid: firebaseUser.uid,
+              email: firebaseUser.email || "",
+              role: "colaborador" as UserRole,
+              nome: firebaseUser.displayName || firebaseUser.email || "",
+            });
+          }
+        } catch (error) {
+          console.error("Error fetching user profile:", error);
           setProfile({
             uid: firebaseUser.uid,
             email: firebaseUser.email || "",
@@ -57,11 +69,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signIn = async (email: string, password: string) => {
-    await signInWithEmailAndPassword(auth, email, password);
+    const authInstance = getClientAuth();
+    await signInWithEmailAndPassword(authInstance, email, password);
   };
 
   const signOut = async () => {
-    await firebaseSignOut(auth);
+    const authInstance = getClientAuth();
+    await firebaseSignOut(authInstance);
     setProfile(null);
   };
 
