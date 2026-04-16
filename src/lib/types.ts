@@ -73,6 +73,20 @@ export interface Prova {
   aprovado?: boolean;
 }
 
+export interface ProvaTemplate {
+  id: string;
+  competenciaId: string;
+  nivelDe: NivelCompetencia;
+  nivelPara: NivelCompetencia;
+  titulo: string;
+  formId: string;
+  formBaseUrl: string;
+  entryEmailId: string;
+  totalQuestoes: number;
+  ativo: boolean;
+  criadoEm: string;
+}
+
 export interface AvaliacaoDesempenho {
   id: string;
   colaboradorId: string;

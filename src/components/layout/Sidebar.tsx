@@ -16,6 +16,7 @@ import {
   User,
   ChevronLeft,
   ChevronRight,
+  FileQuestion,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -37,6 +38,7 @@ const NAV_ITEMS: NavItem[] = [
   { label: "Histórico", href: "/colaborador/historico", icon: <FileBarChart size={20} />, roles: ["colaborador"] },
   { label: "Colaboradores", href: "/admin/colaboradores", icon: <Users size={20} />, roles: ["admin"] },
   { label: "Competências", href: "/admin/competencias", icon: <Grid3X3 size={20} />, roles: ["admin"] },
+  { label: "Templates de Provas", href: "/admin/provas-templates", icon: <FileQuestion size={20} />, roles: ["admin"] },
   { label: "Configurações", href: "/admin/configuracoes", icon: <Settings size={20} />, roles: ["admin"] },
 ];
 
