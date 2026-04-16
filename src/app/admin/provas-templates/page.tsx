@@ -11,14 +11,22 @@ import { Plus, Edit2, Trash2, X, Save, ExternalLink, Info, CheckCircle, AlertCir
 
 const NIVEL_OPTIONS: NivelCompetencia[] = [0, 1, 2, 3, 4];
 
-function extractFormId(input: string): string {
-  // Accepts full URL or raw ID
-  const match = input.match(/\/forms\/d\/([a-zA-Z0-9_-]+)/);
-  return match ? match[1] : input.trim();
-}
-
-function buildFormBaseUrl(formId: string): string {
-  return `https://docs.google.com/forms/d/${formId}/viewform`;
+function parseFormUrl(input: string): { formId: string; formBaseUrl: string } {
+  const trimmed = input.trim();
+  // Formato de resposta: /forms/d/e/{ID}/viewform
+  const responseMatch = trimmed.match(/\/forms\/d\/e\/([a-zA-Z0-9_-]+)/);
+  if (responseMatch) {
+    const formId = responseMatch[1];
+    return { formId, formBaseUrl: `https://docs.google.com/forms/d/e/${formId}/viewform` };
+  }
+  // Formato de edição: /forms/d/{ID}/edit ou /viewform
+  const editMatch = trimmed.match(/\/forms\/d\/([a-zA-Z0-9_-]+)/);
+  if (editMatch) {
+    const formId = editMatch[1];
+    return { formId, formBaseUrl: `https://docs.google.com/forms/d/${formId}/viewform` };
+  }
+  // ID puro
+  return { formId: trimmed, formBaseUrl: `https://docs.google.com/forms/d/${trimmed}/viewform` };
 }
 
 function buildPrefilledUrl(template: ProvaTemplate, email: string): string {
@@ -95,8 +103,7 @@ export default function ProvasTemplatesPage() {
     if (!form.competenciaId || !form.formInput || !form.entryEmailId || !form.titulo) return;
     setSaving(true);
     try {
-      const formId = extractFormId(form.formInput);
-      const formBaseUrl = buildFormBaseUrl(formId);
+      const { formId, formBaseUrl } = parseFormUrl(form.formInput);
       const payload = {
         competenciaId: form.competenciaId,
         nivelDe: form.nivelDe,
@@ -399,7 +406,7 @@ export default function ProvasTemplatesPage() {
                 />
                 {form.formInput && (
                   <p className="mt-1 text-[10px] text-slate-500">
-                    Form ID detectado: <code className="text-blue-300">{extractFormId(form.formInput) || "—"}</code>
+                    Form ID detectado: <code className="text-blue-300">{parseFormUrl(form.formInput).formId || "—"}</code>
                   </p>
                 )}
               </div>
@@ -447,7 +454,7 @@ export default function ProvasTemplatesPage() {
             {form.competenciaId && form.formInput && form.entryEmailId && (
               <div className="mt-4 flex items-center gap-2 text-xs text-emerald-400">
                 <CheckCircle size={14} />
-                Link prefilled será: <code className="text-blue-300 truncate max-w-xs">{buildPrefilledUrl({ formBaseUrl: buildFormBaseUrl(extractFormId(form.formInput)), entryEmailId: form.entryEmailId.startsWith("entry.") ? form.entryEmailId : `entry.${form.entryEmailId}` } as ProvaTemplate, "email@teste.com")}</code>
+                Link prefilled será: <code className="text-blue-300 truncate max-w-xs">{buildPrefilledUrl({ formBaseUrl: parseFormUrl(form.formInput).formBaseUrl, entryEmailId: form.entryEmailId.startsWith("entry.") ? form.entryEmailId : `entry.${form.entryEmailId}` } as ProvaTemplate, "email@teste.com")}</code>
               </div>
             )}
 
