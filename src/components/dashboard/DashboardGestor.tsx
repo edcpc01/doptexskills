@@ -8,7 +8,7 @@ import { CARGO_LABELS } from "@/lib/types";
 import { Users, TrendingUp, Award, AlertTriangle, Clock, CheckCircle } from "lucide-react";
 import {
   RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis,
-  ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Cell, Legend,
+  ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Cell,
 } from "recharts";
 
 interface ColabStats {
@@ -27,6 +27,7 @@ export default function DashboardGestor() {
   const [stats, setStats] = useState<ColabStats[]>([]);
   const [pendentes, setPendentes] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [selectedColabId, setSelectedColabId] = useState<string>("");
 
   useEffect(() => {
     loadDashboard();
@@ -173,35 +174,41 @@ export default function DashboardGestor() {
 
       {/* 4 Pilares por Colaborador */}
       <div className="glass-card rounded-2xl p-6">
-        <h3 className="text-sm font-semibold text-slate-300 mb-4">4 Pilares por Colaborador</h3>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-sm font-semibold text-slate-300">4 Pilares por Colaborador</h3>
+          {stats.length > 0 && (
+            <select
+              value={selectedColabId}
+              onChange={(e) => setSelectedColabId(e.target.value)}
+              className="bg-slate-800 border border-slate-700 text-slate-300 text-xs rounded-lg px-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            >
+              {stats.map((c) => (
+                <option key={c.id} value={c.id}>{c.nome}</option>
+              ))}
+            </select>
+          )}
+        </div>
         {stats.length === 0 ? (
           <div className="flex items-center justify-center h-48 text-slate-500 text-sm">Nenhum dado disponível</div>
-        ) : (
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart
-              data={stats.map((c) => ({
-                nome: c.nome.split(" ")[0],
-                Competências: c.mediaCompetencias,
-                Eficiência: c.eficiencia,
-                Desempenho: c.desempenho,
-                Assiduidade: c.assiduidade,
-              }))}
-              margin={{ top: 4, right: 8, left: -10, bottom: 4 }}
-            >
-              <XAxis dataKey="nome" tick={{ fill: "#94A3B8", fontSize: 11 }} />
-              <YAxis domain={[0, 100]} tick={{ fill: "#64748B", fontSize: 10 }} />
-              <Tooltip
-                contentStyle={{ background: "#1E293B", border: "1px solid #334155", borderRadius: 12, color: "#F8FAFC" }}
-                formatter={(value) => [`${String(value)}%`] as [string]}
-              />
-              <Legend wrapperStyle={{ fontSize: 11, color: "#94A3B8" }} />
-              <Bar dataKey="Competências" fill="#2563EB" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="Eficiência" fill="#06B6D4" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="Desempenho" fill="#8B5CF6" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="Assiduidade" fill="#10B981" radius={[4, 4, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        )}
+        ) : (() => {
+          const colab = stats.find((c) => c.id === selectedColabId) ?? stats[0];
+          const radarColabData = [
+            { pilar: "Competências", valor: colab.mediaCompetencias },
+            { pilar: "Eficiência", valor: colab.eficiencia },
+            { pilar: "Desempenho", valor: colab.desempenho },
+            { pilar: "Assiduidade", valor: colab.assiduidade },
+          ];
+          return (
+            <ResponsiveContainer width="100%" height={280}>
+              <RadarChart data={radarColabData}>
+                <PolarGrid stroke="#334155" />
+                <PolarAngleAxis dataKey="pilar" tick={{ fill: "#94A3B8", fontSize: 11 }} />
+                <PolarRadiusAxis angle={30} domain={[0, 100]} tick={{ fill: "#64748B", fontSize: 10 }} />
+                <Radar name={colab.nome} dataKey="valor" stroke="#2563EB" fill="#2563EB" fillOpacity={0.25} strokeWidth={2} />
+              </RadarChart>
+            </ResponsiveContainer>
+          );
+        })()}
       </div>
 
       {/* Ranking */}
