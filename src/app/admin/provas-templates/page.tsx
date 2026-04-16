@@ -57,10 +57,12 @@ export default function ProvasTemplatesPage() {
         getDocs(collection(db, "provas_templates")),
         getDocs(collection(db, "competencias")),
       ]);
+      const comps = cSnap.docs.map((d) => ({ id: d.id, ...d.data() } as Competencia)).sort((a, b) => a.ordem - b.ordem);
+      console.log("Competências carregadas:", comps.length, comps);
       setTemplates(tSnap.docs.map((d) => ({ id: d.id, ...d.data() } as ProvaTemplate)));
-      setCompetencias(cSnap.docs.map((d) => ({ id: d.id, ...d.data() } as Competencia)).sort((a, b) => a.ordem - b.ordem));
+      setCompetencias(comps);
     } catch (e) {
-      console.error(e);
+      console.error("Erro ao carregar dados:", e);
     } finally {
       setLoading(false);
     }
