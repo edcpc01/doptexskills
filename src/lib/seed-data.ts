@@ -1,24 +1,42 @@
-import type { Colaborador, Competencia, CargoType, GrupoCompetencia, NivelCompetencia } from "./types";
+import type { Colaborador, CargoType, GrupoCompetencia, NivelCompetencia } from "./types";
 
 export const COLABORADORES_SEED: Omit<Colaborador, "id">[] = [
-  { nome: "Brenda Cristina Antunes Netto", email: "brenda@doptex.com", cargo: "TECELAO", dataAdmissao: "2022-11-08", ativo: true },
-  { nome: "Gustavo Celestino dos Santos", email: "gustavo@doptex.com", cargo: "EXPEDIDOR", dataAdmissao: "2021-07-20", ativo: true },
-  { nome: "Julia Stephanie Henken", email: "julia@doptex.com", cargo: "TECELAO", dataAdmissao: "2022-10-25", ativo: true },
-  { nome: "Karen Cristine Mesquita Inocencio", email: "karen@doptex.com", cargo: "TECELAO", dataAdmissao: "2023-09-26", ativo: true },
-  { nome: "Mayra Candido da Silva", email: "mayra@doptex.com", cargo: "TECELAO", dataAdmissao: "2019-01-08", ativo: true },
-  { nome: "Roney Gomes Ribeiro", email: "roney@doptex.com", cargo: "TECELAO", dataAdmissao: "2024-03-05", ativo: true },
-  { nome: "Marciana Mendes Alves", email: "marciana@doptex.com", cargo: "AJUDANTE_PRODUCAO", dataAdmissao: "2024-05-22", ativo: true },
-  { nome: "Sara Caroline de Souza Castilho", email: "sara@doptex.com", cargo: "AJUDANTE_PRODUCAO", dataAdmissao: "2024-06-25", ativo: true },
-  { nome: "Renaldo Gomes da Silva", email: "renaldo@doptex.com", cargo: "AUX_MANUT_MECANICA", dataAdmissao: "2022-08-09", ativo: true },
-  { nome: "Leonaldo Pereira da Silva", email: "leonaldo@doptex.com", cargo: "AJUDANTE_PRODUCAO", dataAdmissao: "2021-08-03", ativo: true },
-  { nome: "Roberto Nascimento Lima", email: "roberto@doptex.com", cargo: "TECELAO", dataAdmissao: "2015-07-20", ativo: true },
-  { nome: "Lucas Rodrigo Soares Gonzaga", email: "lucas.gonzaga@doptex.com", cargo: "TECELAO", dataAdmissao: "2021-09-20", ativo: true },
-  { nome: "Tamara Damazio da Silva", email: "tamara@doptex.com", cargo: "TECELAO", dataAdmissao: "2024-03-05", ativo: true },
-  { nome: "Edimar Rocha de Jesus", email: "edimar@doptex.com", cargo: "TECELAO", dataAdmissao: "2023-07-24", ativo: true },
-  { nome: "Iandra Fernanda Ribeiro Moura", email: "iandra@doptex.com", cargo: "AJUDANTE_PRODUCAO", dataAdmissao: "2023-09-19", ativo: true },
-  { nome: "Jose Nilton de Jesus Barros", email: "jose.nilton@doptex.com", cargo: "TECELAO", dataAdmissao: "2022-03-08", ativo: true },
-  { nome: "Nicolas Marcal", email: "nicolas@doptex.com", cargo: "EXPEDIDOR", dataAdmissao: "2022-07-05", ativo: true },
-  { nome: "Kelly Leite Rosaboni Mariano", email: "kelly@doptex.com", cargo: "TECELAO", dataAdmissao: "2022-12-21", ativo: true },
+  { nome: "BRENDA CRISTINA ANTUNES NETTO", email: "brenda.netto@doptex.com.br", cargo: "TECELAO", dataAdmissao: "2022-11-08", ativo: true },
+  { nome: "GUSTAVO CELESTINO DOS SANTOS", email: "gustavo.santos@doptex.com.br", cargo: "EXPEDIDOR", dataAdmissao: "2021-07-20", ativo: true },
+  { nome: "JULIA STEPHANIE HENKEN", email: "julia.henken@doptex.com.br", cargo: "TECELAO", dataAdmissao: "2022-10-25", ativo: true },
+  { nome: "KAREN CRISTINE MESQUITA INOCENCIO", email: "karen.inocencio@doptex.com.br", cargo: "TECELAO", dataAdmissao: "2023-09-26", ativo: true },
+  { nome: "MAYRA CANDIDO DA SILVA", email: "mayra.silva@doptex.com.br", cargo: "TECELAO", dataAdmissao: "2019-01-08", ativo: true },
+  { nome: "RONEY GOMES RIBEIRO", email: "roney.ribeiro@doptex.com.br", cargo: "TECELAO", dataAdmissao: "2024-03-05", ativo: true },
+  { nome: "MARCIANA MENDES ALVES", email: "marciana.alves@doptex.com.br", cargo: "AJUDANTE_PRODUCAO", dataAdmissao: "2024-05-22", ativo: true },
+  { nome: "SARA CAROLINE DE SOUZA CASTILHO", email: "sara.castilho@doptex.com.br", cargo: "AJUDANTE_PRODUCAO", dataAdmissao: "2024-06-25", ativo: true },
+  { nome: "RENALDO GOMES DA SILVA", email: "renaldo.silva@doptex.com.br", cargo: "AUX_MANUT_MECANICA", dataAdmissao: "2022-08-09", ativo: true },
+  { nome: "LEONALDO PEREIRA DA SILVA", email: "leonaldo.silva@doptex.com.br", cargo: "AJUDANTE_PRODUCAO", dataAdmissao: "2021-08-03", ativo: true },
+  { nome: "ROBERTO NASCIMENTO LIMA", email: "roberto.lima@doptex.com.br", cargo: "TECELAO", dataAdmissao: "2015-07-20", ativo: true },
+  { nome: "LUCAS RODRIGO SOARES GONZAGA", email: "lucas.gonzaga@doptex.com.br", cargo: "TECELAO", dataAdmissao: "2021-09-20", ativo: true },
+  { nome: "TAMARA DAMAZIO DA SILVA", email: "tamara.silva@doptex.com.br", cargo: "TECELAO", dataAdmissao: "2024-03-05", ativo: true },
+  { nome: "EDIMAR ROCHA DE JESUS", email: "edimar.jesus@doptex.com.br", cargo: "TECELAO", dataAdmissao: "2023-07-24", ativo: true },
+  { nome: "IANDRA FERNANDA RIBEIRO MOURA", email: "iandra.moura@doptex.com.br", cargo: "AJUDANTE_PRODUCAO", dataAdmissao: "2023-09-19", ativo: true },
+  { nome: "JOSE NILTON DE JESUS BARROS", email: "jose.barros@doptex.com.br", cargo: "TECELAO", dataAdmissao: "2022-03-08", ativo: true },
+  { nome: "NICOLAS MARCAL", email: "nicolas.marcal@doptex.com.br", cargo: "EXPEDIDOR", dataAdmissao: "2022-07-05", ativo: true },
+  { nome: "KELLY LEITE ROSABONI MARIANO", email: "kelly.mariano@doptex.com.br", cargo: "TECELAO", dataAdmissao: "2022-12-21", ativo: true },
+  { nome: "ANDERSON DE CARVALHO LIMA", email: "anderson.lima@doptex.com.br", cargo: "TECELAO", dataAdmissao: "2020-01-02", ativo: true },
+  { nome: "THIAGO COSTA FOLTRAN SIMON", email: "thiago.simon@doptex.com.br", cargo: "EXPEDIDOR", dataAdmissao: "2023-07-04", ativo: true },
+  { nome: "ALAN PEREIRA DA CRUZ", email: "alan.cruz@doptex.com.br", cargo: "TECELAO", dataAdmissao: "2023-08-22", ativo: true },
+  { nome: "ERIKA FERNANDA DE LIMA", email: "erika.lima@doptex.com.br", cargo: "TECELAO", dataAdmissao: "2023-09-19", ativo: true },
+  { nome: "ELIANE DOS REIS MARCOS", email: "eliane.marcos@doptex.com.br", cargo: "TECELAO", dataAdmissao: "2022-09-13", ativo: true },
+  { nome: "VIVIANE TEIXEIRA SOARES", email: "viviane.soares@doptex.com.br", cargo: "TECELAO", dataAdmissao: "2022-10-18", ativo: true },
+  { nome: "LARISSA RODRIGUES DE CASTRO", email: "larissa.castro@doptex.com.br", cargo: "AJUDANTE_PRODUCAO", dataAdmissao: "2023-07-19", ativo: true },
+  { nome: "JOSIVAL MOREIRA DOS SANTOS", email: "josival.santos@doptex.com.br", cargo: "AJUDANTE_PRODUCAO", dataAdmissao: "2021-03-04", ativo: true },
+  { nome: "OZEAS LEITE BELEM NETO", email: "ozeas.neto@doptex.com.br", cargo: "TECELAO", dataAdmissao: "2024-04-02", ativo: true },
+  { nome: "ANDERSON LEVINO COSTA", email: "anderson.costa@doptex.com.br", cargo: "TECELAO", dataAdmissao: "2024-07-10", ativo: true },
+  { nome: "GERSON MARTINS DINIZ", email: "gerson.diniz@doptex.com.br", cargo: "TECELAO", dataAdmissao: "2024-03-05", ativo: true },
+  { nome: "CAMILA LIMA SOUZA", email: "camila.souza@doptex.com.br", cargo: "AJUDANTE_PRODUCAO", dataAdmissao: "2025-07-01", ativo: true },
+  { nome: "MIRELLY BORGES DO NASCIMENTO", email: "mirelly.nascimento@doptex.com.br", cargo: "TECELAO", dataAdmissao: "2025-06-10", ativo: true },
+  { nome: "GUSTAVO PEREIRA RAMOS", email: "gustavo.ramos@doptex.com.br", cargo: "TECELAO", dataAdmissao: "2025-01-14", ativo: true },
+  { nome: "MATEUS GOMES DOS SANTOS", email: "mateus.santos@doptex.com.br", cargo: "EXPEDIDOR", dataAdmissao: "2025-10-13", ativo: true },
+  { nome: "LUCIANE APARECIDA DA CRUZ", email: "luciane.cruz@doptex.com.br", cargo: "TECELAO", dataAdmissao: "2025-02-18", ativo: true },
+  { nome: "NATANAEL PEREIRA PAES", email: "natanael.paes@doptex.com.br", cargo: "TECELAO", dataAdmissao: "2025-09-15", ativo: true },
+  { nome: "CACILDA QUERUBINA SONCHIM DA COSTA", email: "cacilda.costa@doptex.com.br", cargo: "TECELAO", dataAdmissao: "2024-10-01", ativo: true },
 ];
 
 type CompSeed = { nome: string; grupo: GrupoCompetencia; cargos: CargoType[] };
@@ -26,24 +44,24 @@ type CompSeed = { nome: string; grupo: GrupoCompetencia; cargos: CargoType[] };
 const OPERACAO_CARGOS: CargoType[] = ["TECELAO", "AJUDANTE_PRODUCAO", "EXPEDIDOR", "AUX_MANUT_MECANICA"];
 
 export const COMPETENCIAS_SEED: CompSeed[] = [
-  // Operacionais
+  // Operacionais (6)
   { nome: "Atividades de Ajudante de Produção", grupo: "Competências Operacionais", cargos: OPERACAO_CARGOS },
   { nome: "Tear 32 Polegadas", grupo: "Competências Operacionais", cargos: OPERACAO_CARGOS },
   { nome: "Tear 42 Polegadas", grupo: "Competências Operacionais", cargos: OPERACAO_CARGOS },
   { nome: "Tear Interlock", grupo: "Competências Operacionais", cargos: OPERACAO_CARGOS },
   { nome: "Tear Ribana", grupo: "Competências Operacionais", cargos: OPERACAO_CARGOS },
   { nome: "Tear com Elastano", grupo: "Competências Operacionais", cargos: OPERACAO_CARGOS },
-  // Controle de Processo e Qualidade
+  // Controle de Processo e Qualidade (5)
   { nome: "Controle de Fios na Gaiola", grupo: "Competências de Controle de Processo e Qualidade", cargos: OPERACAO_CARGOS },
   { nome: "Realização Adequada de Controle Visual", grupo: "Competências de Controle de Processo e Qualidade", cargos: OPERACAO_CARGOS },
   { nome: "POP de Limpeza de Peças", grupo: "Competências de Controle de Processo e Qualidade", cargos: OPERACAO_CARGOS },
   { nome: "Revisão de Peças", grupo: "Competências de Controle de Processo e Qualidade", cargos: OPERACAO_CARGOS },
   { nome: "Organização e Limpeza do Setor", grupo: "Competências de Controle de Processo e Qualidade", cargos: OPERACAO_CARGOS },
-  // Atividades Logísticas
+  // Atividades Logísticas (3)
   { nome: "Lançamento de Peças no Sistema", grupo: "Competências de Atividades Logísticas", cargos: OPERACAO_CARGOS },
   { nome: "Montagem e Fechamento de PLTM", grupo: "Competências de Atividades Logísticas", cargos: OPERACAO_CARGOS },
   { nome: "Transferências de PLTM no Sistema", grupo: "Competências de Atividades Logísticas", cargos: OPERACAO_CARGOS },
-  // Comportamentais (Operação)
+  // Comportamentais Operação (7)
   { nome: "Atendimento de Objetivos de Produção e Qualidade", grupo: "Competências Comportamentais", cargos: OPERACAO_CARGOS },
   { nome: "Entendimento das Normas Organizacionais", grupo: "Competências Comportamentais", cargos: OPERACAO_CARGOS },
   { nome: "Normas de Segurança e Saúde", grupo: "Competências Comportamentais", cargos: OPERACAO_CARGOS },
@@ -51,24 +69,24 @@ export const COMPETENCIAS_SEED: CompSeed[] = [
   { nome: "Capacidade e Facilidade de Comunicação", grupo: "Competências Comportamentais", cargos: OPERACAO_CARGOS },
   { nome: "Postura para o Aprendizado", grupo: "Competências Comportamentais", cargos: OPERACAO_CARGOS },
   { nome: "Postura para Ensinamento", grupo: "Competências Comportamentais", cargos: OPERACAO_CARGOS },
-  // Líder - Técnicas
+  // Líder - Técnicas (6)
   { nome: "Manutenção Corretiva", grupo: "Competências Técnicas", cargos: ["LIDER_PRODUCAO"] },
   { nome: "Troca de Artigo Básica", grupo: "Competências Técnicas", cargos: ["LIDER_PRODUCAO"] },
   { nome: "Análise e Entendimento de Relatórios", grupo: "Competências Técnicas", cargos: ["LIDER_PRODUCAO"] },
   { nome: "Programação e Logística", grupo: "Competências Técnicas", cargos: ["LIDER_PRODUCAO"] },
   { nome: "Processos de Qualidade", grupo: "Competências Técnicas", cargos: ["LIDER_PRODUCAO"] },
   { nome: "Organização e Limpeza do Setor (Líder)", grupo: "Competências Técnicas", cargos: ["LIDER_PRODUCAO"] },
-  // Líder - Comportamentais
+  // Líder - Comportamentais (3)
   { nome: "Avaliar e Administrar Desempenho", grupo: "Competências Comportamentais", cargos: ["LIDER_PRODUCAO"] },
   { nome: "Comunicação (Líder)", grupo: "Competências Comportamentais", cargos: ["LIDER_PRODUCAO"] },
   { nome: "Postura Empreendedora", grupo: "Competências Comportamentais", cargos: ["LIDER_PRODUCAO"] },
-  // Líder - Gestão
+  // Líder - Gestão (5)
   { nome: "Resolução de Conflitos", grupo: "Competências de Gestão", cargos: ["LIDER_PRODUCAO"] },
   { nome: "Definição de Objetivos Diários", grupo: "Competências de Gestão", cargos: ["LIDER_PRODUCAO"] },
   { nome: "Controle de Indicadores de Produção", grupo: "Competências de Gestão", cargos: ["LIDER_PRODUCAO"] },
   { nome: "Normas de Segurança e Saúde (Líder)", grupo: "Competências de Gestão", cargos: ["LIDER_PRODUCAO"] },
   { nome: "Gestão de Custos e Processos (Líder)", grupo: "Competências de Gestão", cargos: ["LIDER_PRODUCAO"] },
-  // Supervisor - Técnicas
+  // Supervisor - Técnicas (7)
   { nome: "Desenvolvimento de Produtos Básicos", grupo: "Competências Técnicas", cargos: ["SUPERVISOR_PRODUCAO"] },
   { nome: "Princípios de Formação e Produção de Malhas", grupo: "Competências Técnicas", cargos: ["SUPERVISOR_PRODUCAO"] },
   { nome: "Domínio em Sistemas ERPs", grupo: "Competências Técnicas", cargos: ["SUPERVISOR_PRODUCAO"] },
@@ -76,12 +94,12 @@ export const COMPETENCIAS_SEED: CompSeed[] = [
   { nome: "Desenvolvimento de Processos Produtivos", grupo: "Competências Técnicas", cargos: ["SUPERVISOR_PRODUCAO"] },
   { nome: "Acompanhamento de Projetos e Plano de Ações", grupo: "Competências Técnicas", cargos: ["SUPERVISOR_PRODUCAO"] },
   { nome: "Negociação e Compras", grupo: "Competências Técnicas", cargos: ["SUPERVISOR_PRODUCAO"] },
-  // Supervisor - Comportamentais
+  // Supervisor - Comportamentais (4)
   { nome: "Capacidade Analítica de Processos", grupo: "Competências Comportamentais", cargos: ["SUPERVISOR_PRODUCAO"] },
   { nome: "Comunicação (Supervisor)", grupo: "Competências Comportamentais", cargos: ["SUPERVISOR_PRODUCAO"] },
   { nome: "Postura Criativa e Empreendedora", grupo: "Competências Comportamentais", cargos: ["SUPERVISOR_PRODUCAO"] },
   { nome: "Relacionamento e Condução Interdisciplinar", grupo: "Competências Comportamentais", cargos: ["SUPERVISOR_PRODUCAO"] },
-  // Supervisor - Gestão
+  // Supervisor - Gestão (6)
   { nome: "Criação de Metas de Médio Prazo", grupo: "Competências de Gestão", cargos: ["SUPERVISOR_PRODUCAO"] },
   { nome: "Criação de Cronogramas Preventivos", grupo: "Competências de Gestão", cargos: ["SUPERVISOR_PRODUCAO"] },
   { nome: "Desenvolvimento e Acompanhamento de Indicadores", grupo: "Competências de Gestão", cargos: ["SUPERVISOR_PRODUCAO"] },
@@ -90,25 +108,68 @@ export const COMPETENCIAS_SEED: CompSeed[] = [
   { nome: "Gestão de Custos e Processos (Supervisor)", grupo: "Competências de Gestão", cargos: ["SUPERVISOR_PRODUCAO"] },
 ];
 
-// Notas iniciais por colaborador (aba Março-2026), na mesma ordem das competências operacionais
-// Ordem: [op1..op6, ctrl1..ctrl5, log1..log3, comp1..comp7] = 21 competências
+// Notas iniciais da planilha Março-2026 (21 competências operacionais, na ordem)
 export const NOTAS_INICIAIS: Record<string, NivelCompetencia[]> = {
-  "Brenda Cristina Antunes Netto":   [3,2,2,1,1,1, 2,2,2,2,3, 3,0,0, 2,3,3,2,2,2,2],
-  "Gustavo Celestino dos Santos":    [4,0,0,0,0,0, 4,3,0,4,2, 4,4,4, 3,3,3,3,4,3,4],
-  "Julia Stephanie Henken":          [4,3,3,3,2,2, 3,3,4,3,4, 4,0,0, 3,3,3,4,3,4,4],
-  "Karen Cristine Mesquita Inocencio":[4,3,3,2,2,2, 3,3,3,2,4, 4,0,0, 3,3,3,4,3,4,3],
-  "Mayra Candido da Silva":          [3,3,3,3,3,3, 3,3,3,2,3, 3,0,0, 3,3,3,3,3,3,2],
-  "Roney Gomes Ribeiro":             [4,4,4,4,3,3, 3,4,4,2,4, 4,2,2, 4,4,3,4,3,4,3],
-  "Marciana Mendes Alves":           [3,2,2,0,0,0, 3,3,2,2,3, 2,0,0, 3,3,3,3,3,3,3],
-  "Sara Caroline de Souza Castilho": [2,1,1,1,1,1, 2,3,1,1,2, 2,0,0, 2,2,3,3,3,3,2],
-  "Renaldo Gomes da Silva":         [3,3,3,3,3,3, 3,3,3,3,3, 3,3,3, 3,3,3,3,3,3,3],
-  "Leonaldo Pereira da Silva":      [2,0,0,0,0,0, 1,1,2,2,2, 2,2,2, 2,2,2,1,2,2,2],
-  "Roberto Nascimento Lima":         [3,4,4,3,3,3, 4,3,3,3,3, 3,0,0, 3,2,2,2,2,2,3],
-  "Lucas Rodrigo Soares Gonzaga":    [4,3,3,3,3,2, 3,2,3,3,3, 3,1,1, 3,3,2,4,2,3,3],
-  "Tamara Damazio da Silva":         [3,2,2,2,1,1, 2,2,2,2,3, 2,0,0, 2,2,3,3,2,2,2],
-  "Edimar Rocha de Jesus":           [2,1,1,1,1,1, 0,2,2,2,2, 3,2,2, 2,2,2,3,2,2,2],
-  "Iandra Fernanda Ribeiro Moura":   [3,1,1,0,0,0, 1,2,1,2,3, 1,0,0, 2,2,3,3,2,3,2],
-  "Jose Nilton de Jesus Barros":     [4,4,4,3,4,3, 4,4,4,2,4, 4,4,2, 4,3,4,4,4,4,4],
-  "Nicolas Marcal":                  [3,3,3,3,3,2, 3,3,4,2,3, 4,3,3, 3,3,4,3,4,4,4],
-  "Kelly Leite Rosaboni Mariano":    [4,4,4,3,3,2, 4,4,4,2,4, 4,3,0, 4,3,4,4,4,4,4],
+  "BRENDA CRISTINA ANTUNES NETTO":     [3,2,2,1,1,1,2,2,2,2,3,3,0,0,2,3,3,2,2,2,2],
+  "GUSTAVO CELESTINO DOS SANTOS":      [4,0,0,0,0,0,4,3,0,4,2,4,4,4,3,3,3,3,4,3,4],
+  "JULIA STEPHANIE HENKEN":            [4,3,3,3,2,2,3,3,4,3,4,4,0,0,3,3,3,4,3,4,4],
+  "KAREN CRISTINE MESQUITA INOCENCIO": [4,3,3,2,2,2,3,3,3,2,4,4,0,0,3,3,3,4,3,4,3],
+  "MAYRA CANDIDO DA SILVA":            [3,3,3,3,3,3,3,3,3,2,3,3,0,0,3,3,3,3,3,3,2],
+  "RONEY GOMES RIBEIRO":               [4,4,4,4,3,3,3,4,4,2,4,4,2,2,4,4,3,4,3,4,3],
+  "MARCIANA MENDES ALVES":             [3,2,2,0,0,0,3,3,2,2,3,2,0,0,3,3,3,3,3,3,3],
+  "SARA CAROLINE DE SOUZA CASTILHO":   [2,1,1,1,1,1,2,3,1,1,2,2,0,0,2,2,3,3,3,3,2],
+  "RENALDO GOMES DA SILVA":            [3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3],
+  "LEONALDO PEREIRA DA SILVA":         [2,0,0,0,0,0,1,1,2,2,2,2,2,2,2,2,2,1,2,2,2],
+  "ROBERTO NASCIMENTO LIMA":           [3,4,4,3,3,3,4,3,3,3,3,3,0,0,3,2,2,2,2,2,3],
+  "LUCAS RODRIGO SOARES GONZAGA":      [4,3,3,3,3,2,3,2,3,3,3,3,1,1,3,3,2,4,2,3,3],
+  "TAMARA DAMAZIO DA SILVA":           [3,2,2,2,1,1,2,2,2,2,3,2,0,0,2,2,3,3,2,2,2],
+  "EDIMAR ROCHA DE JESUS":             [2,1,1,1,1,1,0,2,2,2,2,3,2,2,2,2,2,3,2,2,2],
+  "IANDRA FERNANDA RIBEIRO MOURA":     [3,1,1,0,0,0,1,2,1,2,3,1,0,0,2,2,3,3,2,3,2],
+  "JOSE NILTON DE JESUS BARROS":       [4,4,4,3,4,3,4,4,4,2,4,4,4,2,4,3,4,4,4,4,4],
+  "NICOLAS MARCAL":                    [3,3,3,3,3,2,3,3,4,2,3,4,3,3,3,3,4,3,4,4,4],
+  "KELLY LEITE ROSABONI MARIANO":      [4,4,4,3,3,2,4,4,4,2,4,4,3,0,4,3,4,4,4,4,4],
+  "ANDERSON DE CARVALHO LIMA":         [3,3,3,0,3,3,4,2,3,0,3,3,3,0,2,2,4,3,3,3,3],
+  "THIAGO COSTA FOLTRAN SIMON":        [4,3,3,3,3,3,3,2,3,2,4,4,4,4,4,3,4,4,4,4,4],
+  "ALAN PEREIRA DA CRUZ":              [3,3,3,3,3,3,3,2,3,1,4,3,3,0,3,3,4,3,3,3,3],
+  "ERIKA FERNANDA DE LIMA":            [3,3,3,2,3,2,2,3,3,1,3,3,3,0,3,3,4,3,3,3,3],
+  "ELIANE DOS REIS MARCOS":            [3,3,3,2,2,2,2,3,2,2,3,3,0,0,3,3,3,3,3,3,3],
+  "VIVIANE TEIXEIRA SOARES":           [3,3,3,2,1,1,2,3,2,1,3,3,0,0,3,3,3,3,2,3,2],
+  "LARISSA RODRIGUES DE CASTRO":       [1,1,1,1,0,0,1,0,0,0,2,2,0,0,1,1,1,1,1,1,1],
+  "JOSIVAL MOREIRA DOS SANTOS":        [2,0,0,0,0,0,0,0,0,0,2,0,0,0,1,1,2,2,1,1,1],
+  "OZEAS LEITE BELEM NETO":            [2,2,2,2,2,2,2,2,2,0,2,2,0,0,2,2,2,2,2,2,2],
+  "ANDERSON LEVINO COSTA":             [1,1,1,0,0,0,0,1,1,0,1,1,0,0,1,1,1,1,1,1,0],
+  "GERSON MARTINS DINIZ":              [3,3,3,2,2,2,2,3,3,2,3,3,3,0,3,2,3,3,4,3,3],
+};
+
+// Eficiência real da aba "Eficiência" (em %, março 2026)
+export const EFICIENCIA_INICIAL: Record<string, number> = {
+  "BRENDA CRISTINA ANTUNES NETTO": 48,
+  "GUSTAVO CELESTINO DOS SANTOS": 62,
+  "JULIA STEPHANIE HENKEN": 74,
+  "KAREN CRISTINE MESQUITA INOCENCIO": 69,
+  "MAYRA CANDIDO DA SILVA": 65,
+  "RONEY GOMES RIBEIRO": 86,
+  "MARCIANA MENDES ALVES": 51,
+  "SARA CAROLINE DE SOUZA CASTILHO": 43,
+  "RENALDO GOMES DA SILVA": 75,
+  "LEONALDO PEREIRA DA SILVA": 35,
+  "ROBERTO NASCIMENTO LIMA": 65,
+  "LUCAS RODRIGO SOARES GONZAGA": 68,
+  "TAMARA DAMAZIO DA SILVA": 48,
+  "EDIMAR ROCHA DE JESUS": 44,
+  "IANDRA FERNANDA RIBEIRO MOURA": 38,
+  "JOSE NILTON DE JESUS BARROS": 92,
+  "NICOLAS MARCAL": 80,
+  "KELLY LEITE ROSABONI MARIANO": 86,
+  "ANDERSON DE CARVALHO LIMA": 63,
+  "THIAGO COSTA FOLTRAN SIMON": 86,
+  "ALAN PEREIRA DA CRUZ": 70,
+  "ERIKA FERNANDA DE LIMA": 67,
+  "ELIANE DOS REIS MARCOS": 61,
+  "VIVIANE TEIXEIRA SOARES": 55,
+  "LARISSA RODRIGUES DE CASTRO": 19,
+  "JOSIVAL MOREIRA DOS SANTOS": 15,
+  "OZEAS LEITE BELEM NETO": 43,
+  "ANDERSON LEVINO COSTA": 15,
+  "GERSON MARTINS DINIZ": 65,
 };
