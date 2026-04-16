@@ -53,19 +53,21 @@ export default function ProvasTemplatesPage() {
 
   const loadData = async () => {
     try {
-      const [tSnap, cSnap] = await Promise.all([
-        getDocs(collection(db, "provas_templates")),
-        getDocs(collection(db, "competencias")),
-      ]);
+      const cSnap = await getDocs(collection(db, "competencias"));
       const comps = cSnap.docs.map((d) => ({ id: d.id, ...d.data() } as Competencia)).sort((a, b) => a.ordem - b.ordem);
-      console.log("Competências carregadas:", comps.length, comps);
-      setTemplates(tSnap.docs.map((d) => ({ id: d.id, ...d.data() } as ProvaTemplate)));
       setCompetencias(comps);
     } catch (e) {
-      console.error("Erro ao carregar dados:", e);
-    } finally {
-      setLoading(false);
+      console.error("Erro ao carregar competências:", e);
     }
+
+    try {
+      const tSnap = await getDocs(collection(db, "provas_templates"));
+      setTemplates(tSnap.docs.map((d) => ({ id: d.id, ...d.data() } as ProvaTemplate)));
+    } catch (e) {
+      console.error("Erro ao carregar templates (deploy das regras pendente):", e);
+    }
+
+    setLoading(false);
   };
 
   const openCreate = () => {
