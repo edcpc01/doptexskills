@@ -1,5 +1,7 @@
 "use client";
 
+export const dynamic = "force-dynamic";
+
 import DashboardColaborador from "@/components/dashboard/DashboardColaborador";
 
 export default function ColaboradorPage() {

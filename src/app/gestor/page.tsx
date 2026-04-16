@@ -1,5 +1,7 @@
 "use client";
 
+export const dynamic = "force-dynamic";
+
 import DashboardGestor from "@/components/dashboard/DashboardGestor";
 
 export default function GestorPage() {

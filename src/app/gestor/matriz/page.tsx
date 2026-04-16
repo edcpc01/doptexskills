@@ -1,5 +1,7 @@
 "use client";
 
+export const dynamic = "force-dynamic";
+
 import MatrizCompetencias from "@/components/competencias/MatrizCompetencias";
 
 export default function MatrizPage() {

@@ -11,37 +11,35 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-let _app: FirebaseApp | null = null;
-let _auth: Auth | null = null;
-let _db: Firestore | null = null;
+let _app: FirebaseApp | undefined;
+let _auth: Auth | undefined;
+let _db: Firestore | undefined;
 
-function getApp(): FirebaseApp {
+function ensureInit() {
   if (!_app) {
     _app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+    _auth = getAuth(_app);
+    _db = getFirestore(_app);
   }
-  return _app;
 }
 
+// Only initialize on the client — avoids build-time SSG errors
+if (typeof window !== "undefined") {
+  ensureInit();
+}
+
+// Exports — these are real Firestore/Auth instances on the client.
+// On the server, they are undefined, which is fine because no server code
+// actually calls Firestore methods on these exports (all callers are "use client").
+export const auth = _auth as Auth;
+export const db = _db as Firestore;
+
 export function getClientAuth(): Auth {
-  if (!_auth) _auth = getAuth(getApp());
-  return _auth;
+  ensureInit();
+  return _auth!;
 }
 
 export function getClientDb(): Firestore {
-  if (!_db) _db = getFirestore(getApp());
-  return _db;
+  ensureInit();
+  return _db!;
 }
-
-// Proxy exports for components that import { db } or { auth }
-// These lazily initialize only when actually accessed on the client
-export const auth: Auth = new Proxy({} as Auth, {
-  get(_, prop) {
-    return (getClientAuth() as any)[prop];
-  },
-});
-
-export const db: Firestore = new Proxy({} as Firestore, {
-  get(_, prop) {
-    return (getClientDb() as any)[prop];
-  },
-});
