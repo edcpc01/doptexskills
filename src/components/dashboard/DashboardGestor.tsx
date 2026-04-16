@@ -192,7 +192,7 @@ export default function DashboardGestor() {
               <YAxis domain={[0, 100]} tick={{ fill: "#64748B", fontSize: 10 }} />
               <Tooltip
                 contentStyle={{ background: "#1E293B", border: "1px solid #334155", borderRadius: 12, color: "#F8FAFC" }}
-                formatter={(value: number, name: string) => [`${value}%`, name]}
+                formatter={(value: string | number) => [`${value}%`]}
               />
               <Legend wrapperStyle={{ fontSize: 11, color: "#94A3B8" }} />
               <Bar dataKey="Competências" fill="#2563EB" radius={[4, 4, 0, 0]} />
