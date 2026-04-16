@@ -4,11 +4,11 @@ import { useState, useEffect } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import type { Colaborador, AvaliacaoCompetencia, AvaliacaoDesempenho, Assiduidade, NivelCompetencia } from "@/lib/types";
-import { CARGO_LABELS, NIVEL_COLORS } from "@/lib/types";
+import { CARGO_LABELS } from "@/lib/types";
 import { Users, TrendingUp, Award, AlertTriangle, Clock, CheckCircle } from "lucide-react";
 import {
   RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis,
-  ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Cell,
+  ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Cell, Legend,
 } from "recharts";
 
 interface ColabStats {
@@ -171,46 +171,65 @@ export default function DashboardGestor() {
         </div>
       </div>
 
-      {/* Ranking */}
+      {/* 4 Pilares por Colaborador */}
       <div className="glass-card rounded-2xl p-6">
-        <h3 className="text-sm font-semibold text-slate-300 mb-4">Ranking de Desenvolvimento</h3>
-        <div className="space-y-2">
-          {stats.slice(0, 10).map((colab, i) => (
-            <div
-              key={colab.id}
-              className="flex items-center gap-4 p-3 rounded-xl hover:bg-slate-800/50 transition-colors"
+        <h3 className="text-sm font-semibold text-slate-300 mb-4">4 Pilares por Colaborador</h3>
+        {stats.length === 0 ? (
+          <div className="flex items-center justify-center h-48 text-slate-500 text-sm">Nenhum dado disponível</div>
+        ) : (
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart
+              data={stats.map((c) => ({
+                nome: c.nome.split(" ")[0],
+                Competências: c.mediaCompetencias,
+                Eficiência: c.eficiencia,
+                Desempenho: c.desempenho,
+                Assiduidade: c.assiduidade,
+              }))}
+              margin={{ top: 4, right: 8, left: -10, bottom: 4 }}
             >
-              <span className="text-sm font-bold text-slate-500 w-6 text-right">{i + 1}</span>
-              <div className="w-8 h-8 rounded-full bg-blue-600/20 flex items-center justify-center text-[10px] font-bold text-blue-400 flex-shrink-0">
-                {colab.nome.split(" ").map((n) => n[0]).slice(0, 2).join("")}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm text-white truncate">{colab.nome}</p>
-                <p className="text-[10px] text-slate-500">{CARGO_LABELS[colab.cargo as keyof typeof CARGO_LABELS]}</p>
-              </div>
-              {/* Mini bars */}
-              <div className="hidden md:flex items-center gap-3 text-[10px] text-slate-400">
-                <MiniBar label="Comp" value={colab.mediaCompetencias} color="#2563EB" />
-                <MiniBar label="Efic" value={colab.eficiencia} color="#06B6D4" />
-                <MiniBar label="Desemp" value={colab.desempenho} color="#8B5CF6" />
-                <MiniBar label="Assid" value={colab.assiduidade} color="#10B981" />
-              </div>
-              {/* IDC Badge */}
-              <div
-                className={`px-3 py-1 rounded-full text-xs font-bold ${
-                  colab.idc >= 90
-                    ? "bg-green-700/30 text-green-400"
-                    : colab.idc >= 70
-                    ? "bg-green-500/20 text-green-300"
-                    : colab.idc >= 50
-                    ? "bg-yellow-500/20 text-yellow-300"
-                    : "bg-red-500/20 text-red-300"
-                }`}
-              >
-                {colab.idc}%
-              </div>
-            </div>
-          ))}
+              <XAxis dataKey="nome" tick={{ fill: "#94A3B8", fontSize: 11 }} />
+              <YAxis domain={[0, 100]} tick={{ fill: "#64748B", fontSize: 10 }} />
+              <Tooltip
+                contentStyle={{ background: "#1E293B", border: "1px solid #334155", borderRadius: 12, color: "#F8FAFC" }}
+                formatter={(value: number, name: string) => [`${value}%`, name]}
+              />
+              <Legend wrapperStyle={{ fontSize: 11, color: "#94A3B8" }} />
+              <Bar dataKey="Competências" fill="#2563EB" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="Eficiência" fill="#06B6D4" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="Desempenho" fill="#8B5CF6" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="Assiduidade" fill="#10B981" radius={[4, 4, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        )}
+      </div>
+
+      {/* Ranking */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Top 6 mais desenvolvidos */}
+        <div className="glass-card rounded-2xl p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <Award size={16} className="text-emerald-400" />
+            <h3 className="text-sm font-semibold text-slate-300">Mais Desenvolvidos</h3>
+          </div>
+          <div className="space-y-2">
+            {stats.slice(0, 6).map((colab, i) => (
+              <RankingRow key={colab.id} colab={colab} position={i + 1} variant="top" />
+            ))}
+          </div>
+        </div>
+
+        {/* 6 que precisam de atenção */}
+        <div className="glass-card rounded-2xl p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <AlertTriangle size={16} className="text-red-400" />
+            <h3 className="text-sm font-semibold text-slate-300">Precisam de Atenção</h3>
+          </div>
+          <div className="space-y-2">
+            {[...stats].reverse().slice(0, 6).map((colab, i) => (
+              <RankingRow key={colab.id} colab={colab} position={stats.length - i} variant="bottom" />
+            ))}
+          </div>
         </div>
       </div>
     </div>
@@ -246,6 +265,49 @@ function KPICard({
       </div>
       <p className="text-2xl font-bold text-white">{value}</p>
       <p className="text-xs text-slate-400 mt-1">{label}</p>
+    </div>
+  );
+}
+
+function RankingRow({
+  colab, position, variant,
+}: {
+  colab: ColabStats;
+  position: number;
+  variant: "top" | "bottom";
+}) {
+  const avatarColor = variant === "top" ? "bg-emerald-600/20 text-emerald-400" : "bg-red-600/20 text-red-400";
+  const posColor = variant === "top" ? "text-emerald-500" : "text-red-500";
+
+  return (
+    <div className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-800/50 transition-colors">
+      <span className={`text-sm font-bold w-5 text-right ${posColor}`}>{position}</span>
+      <div className={`w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold flex-shrink-0 ${avatarColor}`}>
+        {colab.nome.split(" ").map((n: string) => n[0]).slice(0, 2).join("")}
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="text-sm text-white truncate">{colab.nome}</p>
+        <p className="text-[10px] text-slate-500">{CARGO_LABELS[colab.cargo as keyof typeof CARGO_LABELS]}</p>
+      </div>
+      <div className="hidden md:flex items-center gap-3 text-[10px] text-slate-400">
+        <MiniBar label="Comp" value={colab.mediaCompetencias} color="#2563EB" />
+        <MiniBar label="Efic" value={colab.eficiencia} color="#06B6D4" />
+        <MiniBar label="Desemp" value={colab.desempenho} color="#8B5CF6" />
+        <MiniBar label="Assid" value={colab.assiduidade} color="#10B981" />
+      </div>
+      <div
+        className={`px-3 py-1 rounded-full text-xs font-bold ${
+          colab.idc >= 90
+            ? "bg-green-700/30 text-green-400"
+            : colab.idc >= 70
+            ? "bg-green-500/20 text-green-300"
+            : colab.idc >= 50
+            ? "bg-yellow-500/20 text-yellow-300"
+            : "bg-red-500/20 text-red-300"
+        }`}
+      >
+        {colab.idc}%
+      </div>
     </div>
   );
 }
