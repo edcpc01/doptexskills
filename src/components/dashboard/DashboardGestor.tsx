@@ -28,6 +28,7 @@ export default function DashboardGestor() {
   const [pendentes, setPendentes] = useState(0);
   const [loading, setLoading] = useState(true);
   const [selectedColabId, setSelectedColabId] = useState<string>("");
+  const [expandedFaixa, setExpandedFaixa] = useState<string | null>(null);
 
   useEffect(() => {
     loadDashboard();
@@ -105,10 +106,10 @@ export default function DashboardGestor() {
   const emAtencao = stats.filter((c) => c.idc < 50).length;
 
   const idcDistribution = [
-    { faixa: "Excelente (≥90)", count: stats.filter((c) => c.idc >= 90).length, color: "#15803D" },
-    { faixa: "Bom (70-89)", count: stats.filter((c) => c.idc >= 70 && c.idc < 90).length, color: "#22C55E" },
-    { faixa: "Desenv. (50-69)", count: stats.filter((c) => c.idc >= 50 && c.idc < 70).length, color: "#EAB308" },
-    { faixa: "Atenção (<50)", count: stats.filter((c) => c.idc < 50).length, color: "#EF4444" },
+    { faixa: "Excelente (≥90)", color: "#15803D", colaboradores: stats.filter((c) => c.idc >= 90), count: stats.filter((c) => c.idc >= 90).length },
+    { faixa: "Bom (70-89)", color: "#22C55E", colaboradores: stats.filter((c) => c.idc >= 70 && c.idc < 90), count: stats.filter((c) => c.idc >= 70 && c.idc < 90).length },
+    { faixa: "Desenv. (50-69)", color: "#EAB308", colaboradores: stats.filter((c) => c.idc >= 50 && c.idc < 70), count: stats.filter((c) => c.idc >= 50 && c.idc < 70).length },
+    { faixa: "Atenção (<50)", color: "#EF4444", colaboradores: stats.filter((c) => c.idc < 50), count: stats.filter((c) => c.idc < 50).length },
   ];
 
   // Radar data for team average
@@ -137,7 +138,7 @@ export default function DashboardGestor() {
         <KPICard icon={<AlertTriangle size={22} />} label="Em Atenção" value={emAtencao} color="red" />
       </div>
 
-      {/* Charts Row */}
+      {/* Charts Row — Radar Equipe + 4 Pilares por Colaborador */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Radar da equipe */}
         <div className="glass-card rounded-2xl p-6">
@@ -152,63 +153,102 @@ export default function DashboardGestor() {
           </ResponsiveContainer>
         </div>
 
-        {/* Distribuição IDC */}
+        {/* 4 Pilares por Colaborador */}
         <div className="glass-card rounded-2xl p-6">
-          <h3 className="text-sm font-semibold text-slate-300 mb-4">Distribuição IDC</h3>
-          <ResponsiveContainer width="100%" height={280}>
-            <BarChart data={idcDistribution} layout="vertical">
-              <XAxis type="number" tick={{ fill: "#94A3B8", fontSize: 11 }} />
-              <YAxis type="category" dataKey="faixa" tick={{ fill: "#94A3B8", fontSize: 11 }} width={120} />
-              <Tooltip
-                contentStyle={{ background: "#1E293B", border: "1px solid #334155", borderRadius: 12, color: "#F8FAFC" }}
-              />
-              <Bar dataKey="count" name="Colaboradores" radius={[0, 8, 8, 0]}>
-                {idcDistribution.map((entry, index) => (
-                  <Cell key={index} fill={entry.color} />
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-sm font-semibold text-slate-300">4 Pilares por Colaborador</h3>
+            {stats.length > 0 && (
+              <select
+                value={selectedColabId}
+                onChange={(e) => setSelectedColabId(e.target.value)}
+                className="bg-slate-800 border border-slate-700 text-slate-300 text-xs rounded-lg px-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              >
+                {stats.map((c) => (
+                  <option key={c.id} value={c.id}>{c.nome}</option>
                 ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
+              </select>
+            )}
+          </div>
+          {stats.length === 0 ? (
+            <div className="flex items-center justify-center h-48 text-slate-500 text-sm">Nenhum dado disponível</div>
+          ) : (() => {
+            const colab = stats.find((c) => c.id === selectedColabId) ?? stats[0];
+            const radarColabData = [
+              { pilar: "Competências", valor: colab.mediaCompetencias },
+              { pilar: "Eficiência", valor: colab.eficiencia },
+              { pilar: "Desempenho", valor: colab.desempenho },
+              { pilar: "Assiduidade", valor: colab.assiduidade },
+            ];
+            return (
+              <ResponsiveContainer width="100%" height={280}>
+                <RadarChart data={radarColabData}>
+                  <PolarGrid stroke="#334155" />
+                  <PolarAngleAxis dataKey="pilar" tick={{ fill: "#94A3B8", fontSize: 11 }} />
+                  <PolarRadiusAxis angle={30} domain={[0, 100]} tick={{ fill: "#64748B", fontSize: 10 }} />
+                  <Radar name={colab.nome} dataKey="valor" stroke="#2563EB" fill="#2563EB" fillOpacity={0.25} strokeWidth={2} />
+                </RadarChart>
+              </ResponsiveContainer>
+            );
+          })()}
         </div>
       </div>
 
-      {/* 4 Pilares por Colaborador */}
+      {/* Distribuição IDC — full width com expand */}
       <div className="glass-card rounded-2xl p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-sm font-semibold text-slate-300">4 Pilares por Colaborador</h3>
-          {stats.length > 0 && (
-            <select
-              value={selectedColabId}
-              onChange={(e) => setSelectedColabId(e.target.value)}
-              className="bg-slate-800 border border-slate-700 text-slate-300 text-xs rounded-lg px-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-500"
-            >
-              {stats.map((c) => (
-                <option key={c.id} value={c.id}>{c.nome}</option>
-              ))}
-            </select>
-          )}
+        <h3 className="text-sm font-semibold text-slate-300 mb-5">Distribuição IDC</h3>
+        <div className="space-y-3">
+          {idcDistribution.map((faixa) => {
+            const isExpanded = expandedFaixa === faixa.faixa;
+            const maxCount = Math.max(...idcDistribution.map((f) => f.count), 1);
+            return (
+              <div key={faixa.faixa}>
+                {/* Barra clicável */}
+                <button
+                  onClick={() => setExpandedFaixa(isExpanded ? null : faixa.faixa)}
+                  className="w-full flex items-center gap-4 group text-left"
+                >
+                  <span className="text-xs text-slate-400 w-32 shrink-0 text-right">{faixa.faixa}</span>
+                  <div className="flex-1 h-8 bg-slate-800 rounded-lg overflow-hidden relative">
+                    <div
+                      className="h-full rounded-lg transition-all duration-500"
+                      style={{ width: `${(faixa.count / maxCount) * 100}%`, backgroundColor: faixa.color }}
+                    />
+                    <span className="absolute inset-0 flex items-center pl-3 text-xs font-semibold text-white">
+                      {faixa.count} colaborador{faixa.count !== 1 ? "es" : ""}
+                    </span>
+                  </div>
+                  <div className={`shrink-0 text-slate-400 transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`}>
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                      <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </div>
+                </button>
+
+                {/* Colaboradores expandidos */}
+                {isExpanded && faixa.colaboradores.length > 0 && (
+                  <div className="mt-2 ml-36 flex flex-wrap gap-2">
+                    {faixa.colaboradores.map((c) => (
+                      <span
+                        key={c.id}
+                        className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-slate-800 border border-slate-700"
+                      >
+                        <span
+                          className="w-2 h-2 rounded-full shrink-0"
+                          style={{ backgroundColor: faixa.color }}
+                        />
+                        {c.nome}
+                        <span className="text-slate-500 ml-1">{c.idc}%</span>
+                      </span>
+                    ))}
+                  </div>
+                )}
+                {isExpanded && faixa.colaboradores.length === 0 && (
+                  <div className="mt-2 ml-36 text-xs text-slate-500">Nenhum colaborador nesta faixa</div>
+                )}
+              </div>
+            );
+          })}
         </div>
-        {stats.length === 0 ? (
-          <div className="flex items-center justify-center h-48 text-slate-500 text-sm">Nenhum dado disponível</div>
-        ) : (() => {
-          const colab = stats.find((c) => c.id === selectedColabId) ?? stats[0];
-          const radarColabData = [
-            { pilar: "Competências", valor: colab.mediaCompetencias },
-            { pilar: "Eficiência", valor: colab.eficiencia },
-            { pilar: "Desempenho", valor: colab.desempenho },
-            { pilar: "Assiduidade", valor: colab.assiduidade },
-          ];
-          return (
-            <ResponsiveContainer width="100%" height={280}>
-              <RadarChart data={radarColabData}>
-                <PolarGrid stroke="#334155" />
-                <PolarAngleAxis dataKey="pilar" tick={{ fill: "#94A3B8", fontSize: 11 }} />
-                <PolarRadiusAxis angle={30} domain={[0, 100]} tick={{ fill: "#64748B", fontSize: 10 }} />
-                <Radar name={colab.nome} dataKey="valor" stroke="#2563EB" fill="#2563EB" fillOpacity={0.25} strokeWidth={2} />
-              </RadarChart>
-            </ResponsiveContainer>
-          );
-        })()}
       </div>
 
       {/* Ranking */}
