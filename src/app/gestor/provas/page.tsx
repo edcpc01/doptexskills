@@ -67,8 +67,8 @@ export default function ProvasPage() {
         .map((d) => {
           const data = d.data() as AvaliacaoCompetencia;
           return {
-            id: d.id,
             ...data,
+            id: d.id,
             colabNome: colabs[data.colaboradorId]?.nome || "—",
             colabEmail: colabs[data.colaboradorId]?.email || "",
             compNome: comps[data.competenciaId] || "—",
