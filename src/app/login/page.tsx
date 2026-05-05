@@ -46,12 +46,12 @@ export default function LoginPage() {
       <div className="glass-card rounded-2xl p-8 w-full max-w-md relative z-10">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="w-28 h-28 rounded-2xl overflow-hidden mx-auto mb-4 shadow-lg shadow-blue-600/30">
+          <div className="w-56 h-56 rounded-2xl overflow-hidden mx-auto mb-4 shadow-lg shadow-blue-600/30">
             <Image
-              src="/icons/icon-192.png"
+              src="/icons/icon-512.png"
               alt="Doptex Skills"
-              width={112}
-              height={112}
+              width={224}
+              height={224}
               priority
               className="w-full h-full object-cover"
             />
