@@ -3,6 +3,7 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import Image from "next/image";
 import Sidebar from "./Sidebar";
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
@@ -19,8 +20,15 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-blue-600 flex items-center justify-center font-bold text-xl animate-pulse">
-            D
+          <div className="w-12 h-12 rounded-xl overflow-hidden animate-pulse">
+            <Image
+              src="/icons/icon-192.png"
+              alt="Doptex Skills"
+              width={48}
+              height={48}
+              priority
+              className="w-full h-full object-cover"
+            />
           </div>
           <p className="text-slate-400 text-sm">Carregando...</p>
         </div>

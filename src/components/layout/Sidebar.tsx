@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import {
@@ -62,8 +63,14 @@ export default function Sidebar() {
     >
       {/* Logo */}
       <div className="flex items-center gap-3 px-4 py-5 border-b border-slate-700/50">
-        <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center font-bold text-lg flex-shrink-0">
-          D
+        <div className="w-10 h-10 rounded-xl overflow-hidden flex-shrink-0">
+          <Image
+            src="/icons/icon-192.png"
+            alt="Doptex Skills"
+            width={40}
+            height={40}
+            className="w-full h-full object-cover"
+          />
         </div>
         {!collapsed && (
           <div className="overflow-hidden">
