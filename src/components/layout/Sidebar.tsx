@@ -63,12 +63,12 @@ export default function Sidebar() {
     >
       {/* Logo */}
       <div className="flex items-center gap-3 px-4 py-5 border-b border-slate-700/50">
-        <div className="w-10 h-10 rounded-xl overflow-hidden flex-shrink-0">
+        <div className="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0">
           <Image
             src="/icons/icon-192.png"
             alt="Doptex Skills"
-            width={40}
-            height={40}
+            width={56}
+            height={56}
             className="w-full h-full object-cover"
           />
         </div>

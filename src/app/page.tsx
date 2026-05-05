@@ -23,12 +23,12 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex items-center justify-center">
-      <div className="w-12 h-12 rounded-xl overflow-hidden animate-pulse">
+      <div className="w-20 h-20 rounded-xl overflow-hidden animate-pulse">
         <Image
           src="/icons/icon-192.png"
           alt="Doptex Skills"
-          width={48}
-          height={48}
+          width={80}
+          height={80}
           priority
           className="w-full h-full object-cover"
         />
