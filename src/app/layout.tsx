@@ -6,6 +6,16 @@ export const metadata: Metadata = {
   title: "Doptex Skills — Gestão de Competências",
   description: "Sistema de gestão de competências e desenvolvimento de colaboradores da Doptex Malhas",
   manifest: "/manifest.json",
+  icons: {
+    icon: [
+      { url: "/icons/doptex_favicon.ico", sizes: "any" },
+      { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icons/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [
+      { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
+    ],
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",

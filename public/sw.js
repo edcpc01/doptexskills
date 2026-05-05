@@ -1,8 +1,9 @@
-const CACHE_NAME = "doptex-skills-v1";
+const CACHE_NAME = "doptex-skills-v2";
 const STATIC_ASSETS = [
   "/",
   "/login",
   "/manifest.json",
+  "/icons/doptex_favicon.ico",
   "/icons/icon-192.png",
   "/icons/icon-512.png",
 ];
