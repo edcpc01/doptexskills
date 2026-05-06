@@ -22,7 +22,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         <div className="flex flex-col items-center gap-4">
           <div className="w-40 h-40 rounded-xl overflow-hidden animate-pulse">
             <Image
-              src="/icons/icon-512.png?v=2"
+              src="/icons/icon-512.png"
               alt="Doptex Skills"
               width={160}
               height={160}

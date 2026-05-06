@@ -25,7 +25,7 @@ export default function Home() {
     <div className="min-h-screen flex items-center justify-center">
       <div className="w-40 h-40 rounded-xl overflow-hidden animate-pulse">
         <Image
-          src="/icons/icon-512.png?v=2"
+          src="/icons/icon-512.png"
           alt="Doptex Skills"
           width={160}
           height={160}
