@@ -65,11 +65,11 @@ export default function Sidebar() {
       <div className="flex items-center gap-3 px-4 py-5 border-b border-slate-700/50">
         <div className="w-28 h-28 rounded-xl overflow-hidden flex-shrink-0">
           <Image
-            src="/icons/icon-512.png"
+            src="/icons/icon-512.png?v=2"
             alt="Doptex Skills"
             width={112}
             height={112}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-contain p-2"
           />
         </div>
         {!collapsed && (

@@ -48,12 +48,12 @@ export default function LoginPage() {
         <div className="text-center mb-8">
           <div className="w-64 h-64 rounded-2xl overflow-hidden mx-auto mb-4">
             <Image
-              src="/icons/icon-512.png"
+              src="/icons/icon-512.png?v=2"
               alt="Doptex Skills"
               width={256}
               height={256}
               priority
-              className="w-full h-full object-cover"
+              className="w-full h-full object-contain p-2"
             />
           </div>
           <h1 className="text-2xl font-bold text-white">Doptex Skills</h1>
