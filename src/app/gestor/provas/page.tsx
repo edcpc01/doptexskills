@@ -3,7 +3,7 @@
 export const dynamic = "force-dynamic";
 
 import { useState, useEffect, useRef } from "react";
-import { collection, getDocs, doc, updateDoc } from "firebase/firestore";
+import { collection, getDocs, doc, updateDoc, onSnapshot } from "firebase/firestore";
 import { db, auth } from "@/lib/firebase";
 import type { AvaliacaoCompetencia } from "@/lib/types";
 import { NIVEL_COLORS } from "@/lib/types";
@@ -32,7 +32,56 @@ export default function ProvasPage() {
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    loadData();
+    let unsubscribe: (() => void) | null = null;
+    let cancelled = false;
+
+    (async () => {
+      try {
+        // Carrega colaboradores e competências uma vez (raramente mudam)
+        const [colabSnap, compSnap] = await Promise.all([
+          getDocs(collection(db, "colaboradores")),
+          getDocs(collection(db, "competencias")),
+        ]);
+        if (cancelled) return;
+
+        const colabs = Object.fromEntries(colabSnap.docs.map((d) => [d.id, d.data()]));
+        const comps = Object.fromEntries(compSnap.docs.map((d) => [d.id, d.data().nome as string]));
+
+        // Listener em tempo real nas avaliações
+        unsubscribe = onSnapshot(
+          collection(db, "avaliacoes_competencia"),
+          (avalSnap) => {
+            const avals = avalSnap.docs
+              .map((d) => {
+                const data = d.data() as AvaliacaoCompetencia;
+                return {
+                  ...data,
+                  id: d.id,
+                  colabNome: colabs[data.colaboradorId]?.nome || "—",
+                  colabEmail: colabs[data.colaboradorId]?.email || "",
+                  compNome: comps[data.competenciaId] || "—",
+                };
+              })
+              .filter((a) => a.status !== "confirmado" || a.nivelProposto > a.nivelAtual) as ProvaItem[];
+
+            setProvas(avals.sort((a, b) => b.dataAvaliacao.localeCompare(a.dataAvaliacao)));
+            setLoading(false);
+          },
+          (err) => {
+            console.error("Erro no listener:", err);
+            setLoading(false);
+          }
+        );
+      } catch (error) {
+        console.error("Erro ao carregar:", error);
+        setLoading(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+      if (unsubscribe) unsubscribe();
+    };
   }, []);
 
   useEffect(() => {
@@ -51,38 +100,6 @@ export default function ProvasPage() {
     document.addEventListener("mousedown", onClick);
     return () => document.removeEventListener("mousedown", onClick);
   }, []);
-
-  const loadData = async () => {
-    try {
-      const [avalSnap, colabSnap, compSnap] = await Promise.all([
-        getDocs(collection(db, "avaliacoes_competencia")),
-        getDocs(collection(db, "colaboradores")),
-        getDocs(collection(db, "competencias")),
-      ]);
-
-      const colabs = Object.fromEntries(colabSnap.docs.map((d) => [d.id, d.data()]));
-      const comps = Object.fromEntries(compSnap.docs.map((d) => [d.id, d.data().nome as string]));
-
-      const avals = avalSnap.docs
-        .map((d) => {
-          const data = d.data() as AvaliacaoCompetencia;
-          return {
-            ...data,
-            id: d.id,
-            colabNome: colabs[data.colaboradorId]?.nome || "—",
-            colabEmail: colabs[data.colaboradorId]?.email || "",
-            compNome: comps[data.competenciaId] || "—",
-          };
-        })
-        .filter((a) => a.status !== "confirmado" || a.nivelProposto > a.nivelAtual) as ProvaItem[];
-
-      setProvas(avals.sort((a, b) => b.dataAvaliacao.localeCompare(a.dataAvaliacao)));
-    } catch (error) {
-      console.error("Erro:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const getToken = async () => {
     const user = auth.currentUser;
@@ -106,7 +123,6 @@ export default function ProvasPage() {
         return;
       }
       setToast({ type: "success", msg: data.message || "Prova enviada!" });
-      await loadData();
     } catch (e: unknown) {
       setToast({ type: "error", msg: e instanceof Error ? e.message : "Erro" });
     } finally {
@@ -137,7 +153,6 @@ export default function ProvasPage() {
         type: "success",
         msg: novoStatus === "aprovado" ? "Marcada como aprovada" : "Marcada como reprovada",
       });
-      await loadData();
     } catch (e: unknown) {
       setToast({ type: "error", msg: e instanceof Error ? e.message : "Erro" });
     } finally {
@@ -161,7 +176,6 @@ export default function ProvasPage() {
         return;
       }
       setToast({ type: "success", msg: "Prova excluída" });
-      await loadData();
     } catch (e: unknown) {
       setToast({ type: "error", msg: e instanceof Error ? e.message : "Erro" });
     } finally {
