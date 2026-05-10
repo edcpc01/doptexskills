@@ -96,6 +96,32 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // Níveis Esperados por Cargo
+    match /niveis_esperados/{docId} {
+      allow read: if request.auth != null;
+      allow write: if isAdmin();
+    }
+
+    // PDI – Plano de Desenvolvimento Individual
+    match /pdis/{docId} {
+      allow read: if request.auth != null && (
+        isAdminOrGestor() ||
+        isOwner(resource.data.colaboradorId)
+      );
+      allow create, update: if isAdminOrGestor();
+      allow delete: if isAdminOrGestor();
+    }
+
+    // Treinamentos Externos
+    match /treinamentos/{docId} {
+      allow read: if request.auth != null && (
+        isAdminOrGestor() ||
+        isOwner(resource.data.colaboradorId)
+      );
+      allow create, update: if isAdminOrGestor();
+      allow delete: if isAdminOrGestor();
+    }
+
     // Audit log
     match /audit_log/{docId} {
       allow read: if isAdmin();

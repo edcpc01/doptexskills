@@ -18,6 +18,10 @@ import {
   ChevronLeft,
   ChevronRight,
   FileQuestion,
+  Target,
+  FileText,
+  GraduationCap,
+  TrendingUp,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -34,11 +38,16 @@ const NAV_ITEMS: NavItem[] = [
   { label: "Avaliações", href: "/gestor/avaliacoes", icon: <ClipboardCheck size={20} />, roles: ["admin", "gestor"] },
   { label: "Assiduidade", href: "/gestor/assiduidade", icon: <CalendarCheck size={20} />, roles: ["admin", "gestor"] },
   { label: "Provas", href: "/gestor/provas", icon: <BookOpen size={20} />, roles: ["admin", "gestor"] },
+  { label: "PDI / Gaps", href: "/gestor/pdi", icon: <Target size={20} />, roles: ["admin", "gestor"] },
+  { label: "Histórico", href: "/gestor/historico", icon: <TrendingUp size={20} />, roles: ["admin", "gestor"] },
+  { label: "Treinamentos", href: "/gestor/treinamentos", icon: <GraduationCap size={20} />, roles: ["admin", "gestor"] },
+  { label: "Relatórios", href: "/gestor/relatorios", icon: <FileText size={20} />, roles: ["admin", "gestor"] },
   { label: "Meu Painel", href: "/colaborador", icon: <User size={20} />, roles: ["colaborador"] },
   { label: "Minhas Provas", href: "/colaborador/provas", icon: <BookOpen size={20} />, roles: ["colaborador"] },
   { label: "Histórico", href: "/colaborador/historico", icon: <FileBarChart size={20} />, roles: ["colaborador"] },
   { label: "Colaboradores", href: "/admin/colaboradores", icon: <Users size={20} />, roles: ["admin"] },
   { label: "Competências", href: "/admin/competencias", icon: <Grid3X3 size={20} />, roles: ["admin"] },
+  { label: "Níveis Esperados", href: "/admin/niveis-esperados", icon: <Target size={20} />, roles: ["admin"] },
   { label: "Templates de Provas", href: "/admin/provas-templates", icon: <FileQuestion size={20} />, roles: ["admin"] },
   { label: "Configurações", href: "/admin/configuracoes", icon: <Settings size={20} />, roles: ["admin"] },
 ];

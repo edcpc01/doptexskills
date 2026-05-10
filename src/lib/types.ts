@@ -173,3 +173,60 @@ export const PESOS_DEFAULT: PesosIDC = {
   desempenho: 0.25,
   assiduidade: 0.15,
 };
+
+// ── Níveis Esperados por Cargo ──────────────────────────────────────────────
+
+export interface NivelEsperado {
+  id: string;
+  competenciaId: string;
+  cargo: CargoType;
+  nivelMinimo: NivelCompetencia;
+}
+
+// ── PDI – Plano de Desenvolvimento Individual ───────────────────────────────
+
+export type StatusPDI = "ativo" | "concluido" | "cancelado";
+
+export interface PDIMeta {
+  competenciaId: string;
+  nivelAlvo: NivelCompetencia;
+  prazo: string; // ISO date
+}
+
+export interface PDI {
+  id: string;
+  colaboradorId: string;
+  gestorId: string;
+  titulo: string;
+  dataInicio: string;
+  dataFim: string;
+  status: StatusPDI;
+  metas: PDIMeta[];
+  observacoes?: string;
+  criadoEm: string;
+}
+
+// ── Treinamentos Externos ───────────────────────────────────────────────────
+
+export type TipoTreinamento = "interno" | "externo" | "certificacao";
+
+export interface Treinamento {
+  id: string;
+  colaboradorId: string;
+  titulo: string;
+  instituicao?: string;
+  tipo: TipoTreinamento;
+  dataInicio: string;
+  dataConclusao?: string;
+  cargaHoraria?: number;
+  competenciasRelacionadas: string[];
+  observacoes?: string;
+  registradoPor: string;
+  criadoEm: string;
+}
+
+export const TIPO_TREINAMENTO_LABELS: Record<TipoTreinamento, string> = {
+  interno: "Interno",
+  externo: "Externo",
+  certificacao: "Certificação",
+};
