@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { collection, getDocs, query, where, doc, setDoc, addDoc, Timestamp } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { useState, useEffect, type CSSProperties } from "react";
+import { collection, getDocs, addDoc, onSnapshot } from "firebase/firestore";
+import { db, auth } from "@/lib/firebase";
 import { useAuth } from "@/contexts/AuthContext";
 import type {
   Colaborador,
@@ -13,12 +13,62 @@ import type {
   CargoType,
 } from "@/lib/types";
 import { NIVEL_LABELS, NIVEL_COLORS, CARGO_LABELS } from "@/lib/types";
-import { X, TrendingUp, Send, Filter } from "lucide-react";
+import { X, TrendingUp, Send, Filter, Loader2, CheckCircle } from "lucide-react";
 
 interface NotasMap {
   [colaboradorId: string]: {
     [competenciaId: string]: NivelCompetencia;
   };
+}
+
+type AvalEntry = {
+  nivelAtual: NivelCompetencia;
+  nivelProposto: NivelCompetencia;
+  dataAvaliacao: string;
+};
+
+// Builds the display level map from all evaluations.
+// For each (colaborador, competência) pair:
+//   - If there's an "aprovado"/"confirmado" doc, use the most recent one → nivelProposto
+//   - Otherwise fall back to the most recent pending doc → nivelAtual
+function buildNotasMap(docs: AvaliacaoCompetencia[]): NotasMap {
+  const bestApproved: Record<string, Record<string, AvalEntry>> = {};
+  const bestPending: Record<string, Record<string, AvalEntry>> = {};
+
+  docs.forEach((aval) => {
+    const isApproved = aval.status === "confirmado" || aval.status === "aprovado";
+    const target = isApproved ? bestApproved : bestPending;
+
+    if (!target[aval.colaboradorId]) target[aval.colaboradorId] = {};
+    const existing = target[aval.colaboradorId][aval.competenciaId];
+    if (!existing || aval.dataAvaliacao > existing.dataAvaliacao) {
+      target[aval.colaboradorId][aval.competenciaId] = {
+        nivelAtual: aval.nivelAtual,
+        nivelProposto: aval.nivelProposto,
+        dataAvaliacao: aval.dataAvaliacao,
+      };
+    }
+  });
+
+  const notasMap: NotasMap = {};
+  const allColabs = new Set([...Object.keys(bestApproved), ...Object.keys(bestPending)]);
+
+  allColabs.forEach((colabId) => {
+    notasMap[colabId] = {};
+    const approved = bestApproved[colabId] || {};
+    const pending = bestPending[colabId] || {};
+    const allComps = new Set([...Object.keys(approved), ...Object.keys(pending)]);
+
+    allComps.forEach((compId) => {
+      if (approved[compId]) {
+        notasMap[colabId][compId] = approved[compId].nivelProposto;
+      } else {
+        notasMap[colabId][compId] = pending[compId].nivelAtual;
+      }
+    });
+  });
+
+  return notasMap;
 }
 
 export default function MatrizCompetencias() {
@@ -37,44 +87,62 @@ export default function MatrizCompetencias() {
   const [saving, setSaving] = useState(false);
   const [filterCargo, setFilterCargo] = useState<CargoType | "TODOS">("TODOS");
   const [filterGrupo, setFilterGrupo] = useState<GrupoCompetencia | "TODOS">("TODOS");
+  const [toast, setToast] = useState<{ type: "success" | "error" | "warning"; msg: string } | null>(null);
 
   useEffect(() => {
-    loadData();
-  }, []);
-
-  const loadData = async () => {
-    try {
-      const [colabSnap, compSnap, avalSnap] = await Promise.all([
-        getDocs(collection(db, "colaboradores")),
-        getDocs(collection(db, "competencias")),
-        getDocs(collection(db, "avaliacoes_competencia")),
-      ]);
-
-      const colabs = colabSnap.docs.map((d) => ({ id: d.id, ...d.data() } as Colaborador));
-      const comps = compSnap.docs.map((d) => ({ id: d.id, ...d.data() } as Competencia));
-
-      // Build notas map from latest evaluations
-      const notasMap: NotasMap = {};
-      avalSnap.docs.forEach((d) => {
-        const aval = d.data() as AvaliacaoCompetencia;
-        if (!notasMap[aval.colaboradorId]) notasMap[aval.colaboradorId] = {};
-        // Keep the latest or confirmed evaluation
-        if (aval.status === "confirmado" || aval.status === "aprovado") {
-          notasMap[aval.colaboradorId][aval.competenciaId] = aval.nivelProposto;
-        } else if (!notasMap[aval.colaboradorId][aval.competenciaId]) {
-          notasMap[aval.colaboradorId][aval.competenciaId] = aval.nivelAtual;
-        }
-      });
-
-      setColaboradores(colabs.sort((a, b) => a.nome.localeCompare(b.nome)));
-      setCompetencias(comps.sort((a, b) => a.ordem - b.ordem));
-      setNotas(notasMap);
-    } catch (error) {
-      console.error("Erro ao carregar dados:", error);
-    } finally {
-      setLoading(false);
+    if (toast) {
+      const t = setTimeout(() => setToast(null), 5000);
+      return () => clearTimeout(t);
     }
-  };
+  }, [toast]);
+
+  // Load static data once, then subscribe to evaluations in real time
+  useEffect(() => {
+    let unsubscribe: (() => void) | null = null;
+    let cancelled = false;
+
+    (async () => {
+      try {
+        const [colabSnap, compSnap] = await Promise.all([
+          getDocs(collection(db, "colaboradores")),
+          getDocs(collection(db, "competencias")),
+        ]);
+        if (cancelled) return;
+
+        setColaboradores(
+          colabSnap.docs
+            .map((d) => ({ id: d.id, ...d.data() } as Colaborador))
+            .sort((a, b) => a.nome.localeCompare(b.nome))
+        );
+        setCompetencias(
+          compSnap.docs
+            .map((d) => ({ id: d.id, ...d.data() } as Competencia))
+            .sort((a, b) => a.ordem - b.ordem)
+        );
+
+        unsubscribe = onSnapshot(
+          collection(db, "avaliacoes_competencia"),
+          (snap) => {
+            const avals = snap.docs.map((d) => ({ id: d.id, ...d.data() } as AvaliacaoCompetencia));
+            setNotas(buildNotasMap(avals));
+            setLoading(false);
+          },
+          (err) => {
+            console.error("Erro no listener de avaliações:", err);
+            setLoading(false);
+          }
+        );
+      } catch (error) {
+        console.error("Erro ao carregar dados:", error);
+        setLoading(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+      if (unsubscribe) unsubscribe();
+    };
+  }, []);
 
   const handleCellClick = (colab: Colaborador, comp: Competencia) => {
     const nivel = notas[colab.id]?.[comp.id] ?? (0 as NivelCompetencia);
@@ -89,39 +157,56 @@ export default function MatrizCompetencias() {
 
     try {
       const isPromotion = nivelProposto > selectedCell.nivelAtual;
+      // Levels 0→1 and 1→2 don't require an exam — direct manager approval
+      const needsExam = isPromotion && nivelProposto >= 3;
+
       const avalData: Omit<AvaliacaoCompetencia, "id"> = {
         colaboradorId: selectedCell.colaborador.id,
         competenciaId: selectedCell.competencia.id,
         nivelAtual: selectedCell.nivelAtual,
-        nivelProposto: nivelProposto,
+        nivelProposto,
         avaliadorId: profile.uid,
         dataAvaliacao: new Date().toISOString(),
         periodoReferencia: `${new Date().getFullYear()}-Q${Math.ceil((new Date().getMonth() + 1) / 3)}`,
-        status: isPromotion ? "pendente_prova" : "confirmado",
+        status: needsExam ? "pendente_prova" : "confirmado",
         provaEnviada: false,
-        justificativa: justificativa,
+        justificativa,
       };
 
-      await addDoc(collection(db, "avaliacoes_competencia"), avalData);
+      const docRef = await addDoc(collection(db, "avaliacoes_competencia"), avalData);
 
-      // Update local state
-      setNotas((prev) => ({
-        ...prev,
-        [selectedCell.colaborador.id]: {
-          ...prev[selectedCell.colaborador.id],
-          [selectedCell.competencia.id]: isPromotion ? selectedCell.nivelAtual : nivelProposto,
-        },
-      }));
-
-      // If promotion, create prova record
-      if (isPromotion) {
-        // TODO: integrate Google Forms API here
-        console.log("Prova pendente criada. Integrar Google Forms.");
+      if (needsExam) {
+        const user = auth.currentUser;
+        if (user) {
+          const token = await user.getIdToken();
+          const res = await fetch("/api/provas/enviar", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+            body: JSON.stringify({ avaliacaoId: docRef.id }),
+          });
+          const data = await res.json();
+          if (res.ok) {
+            setToast({ type: "success", msg: data.message || "Prova enviada com sucesso!" });
+          } else {
+            setToast({
+              type: "warning",
+              msg: `Avaliação criada, mas falha ao enviar prova: ${data.error}. Envie pela aba Provas.`,
+            });
+          }
+        }
+      } else {
+        setToast({
+          type: "success",
+          msg: isPromotion
+            ? `${selectedCell.colaborador.nome.split(" ")[0]} promovido de nível ${selectedCell.nivelAtual} para ${nivelProposto}!`
+            : "Avaliação salva.",
+        });
       }
 
       setSelectedCell(null);
     } catch (error) {
       console.error("Erro ao salvar avaliação:", error);
+      setToast({ type: "error", msg: "Erro ao salvar. Tente novamente." });
     } finally {
       setSaving(false);
     }
@@ -139,7 +224,6 @@ export default function MatrizCompetencias() {
     return cargoMatch && grupoMatch;
   });
 
-  // Group competencias by grupo
   const grupos = [...new Set(filteredComps.map((c) => c.grupo))];
 
   if (loading) {
@@ -150,8 +234,26 @@ export default function MatrizCompetencias() {
     );
   }
 
+  const isPromotion = selectedCell ? nivelProposto > selectedCell.nivelAtual : false;
+  const needsExam = isPromotion && nivelProposto >= 3;
+
   return (
     <div>
+      {/* Toast */}
+      {toast && (
+        <div
+          className={`fixed top-6 right-6 z-50 px-5 py-3 rounded-xl shadow-lg text-sm font-medium max-w-md ${
+            toast.type === "success"
+              ? "bg-emerald-600 text-white"
+              : toast.type === "warning"
+              ? "bg-yellow-600 text-white"
+              : "bg-red-600 text-white"
+          }`}
+        >
+          {toast.msg}
+        </div>
+      )}
+
       {/* Filters */}
       <div className="flex flex-wrap items-center gap-3 mb-6">
         <div className="flex items-center gap-2 text-sm text-slate-400">
@@ -184,7 +286,6 @@ export default function MatrizCompetencias() {
       <div className="overflow-x-auto glass-card rounded-2xl p-4">
         <table className="w-full border-collapse">
           <thead>
-            {/* Group headers */}
             <tr>
               <th className="sticky left-0 z-20 bg-slate-900/95 p-2 min-w-[200px]" />
               {grupos.map((grupo) => {
@@ -200,7 +301,6 @@ export default function MatrizCompetencias() {
                 );
               })}
             </tr>
-            {/* Competencia names (vertical) */}
             <tr>
               <th className="sticky left-0 z-20 bg-slate-900/95 p-2 text-left text-xs text-slate-400 font-medium">
                 Colaborador
@@ -327,7 +427,9 @@ export default function MatrizCompetencias() {
                     }`}
                     style={{
                       backgroundColor: NIVEL_COLORS[n],
-                      ...(nivelProposto === n ? { "--tw-ring-color": NIVEL_COLORS[n] } as React.CSSProperties : {}),
+                      ...(nivelProposto === n
+                        ? ({ "--tw-ring-color": NIVEL_COLORS[n] } as CSSProperties)
+                        : {}),
                     }}
                   >
                     {n}
@@ -337,17 +439,29 @@ export default function MatrizCompetencias() {
               <p className="text-xs text-slate-400 mt-1">{NIVEL_LABELS[nivelProposto]}</p>
             </div>
 
-            {/* Promotion warning */}
-            {nivelProposto > selectedCell.nivelAtual && (
-              <div className="flex items-start gap-3 p-3 rounded-xl bg-blue-500/10 border border-blue-500/30 mb-5">
-                <TrendingUp size={18} className="text-blue-400 mt-0.5 flex-shrink-0" />
-                <div>
-                  <p className="text-sm text-blue-300 font-medium">Promoção de nível</p>
-                  <p className="text-xs text-blue-400/80 mt-0.5">
-                    Uma prova será enviada ao colaborador. O nível só será atualizado após aprovação com nota ≥ 80%.
-                  </p>
+            {/* Promotion info */}
+            {isPromotion && (
+              needsExam ? (
+                <div className="flex items-start gap-3 p-3 rounded-xl bg-blue-500/10 border border-blue-500/30 mb-5">
+                  <TrendingUp size={18} className="text-blue-400 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="text-sm text-blue-300 font-medium">Promoção de nível</p>
+                    <p className="text-xs text-blue-400/80 mt-0.5">
+                      Uma prova será enviada ao colaborador. O nível só será atualizado após aprovação com nota ≥ 80%.
+                    </p>
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div className="flex items-start gap-3 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 mb-5">
+                  <CheckCircle size={18} className="text-emerald-400 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="text-sm text-emerald-300 font-medium">Aprovação direta</p>
+                    <p className="text-xs text-emerald-400/80 mt-0.5">
+                      Níveis 0 → 1 e 1 → 2 não exigem prova. O nível será atualizado imediatamente.
+                    </p>
+                  </div>
+                </div>
+              )
             )}
 
             {/* Justificativa */}
@@ -376,12 +490,22 @@ export default function MatrizCompetencias() {
                 className="flex-1 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold transition-all text-sm disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {saving ? (
-                  "Salvando..."
-                ) : nivelProposto > selectedCell.nivelAtual ? (
                   <>
-                    <Send size={16} />
-                    Enviar Prova
+                    <Loader2 size={16} className="animate-spin" />
+                    {needsExam ? "Enviando..." : "Salvando..."}
                   </>
+                ) : isPromotion ? (
+                  needsExam ? (
+                    <>
+                      <Send size={16} />
+                      Enviar Prova
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle size={16} />
+                      Aprovar
+                    </>
+                  )
                 ) : (
                   "Salvar"
                 )}
