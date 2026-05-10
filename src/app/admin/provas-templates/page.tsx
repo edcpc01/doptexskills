@@ -86,10 +86,13 @@ export default function ProvasTemplatesPage() {
 
   const openEdit = (t: ProvaTemplate) => {
     setEditing(t);
+    // Correct stale data: nivelPara must be > nivelDe
+    const nivelPara: NivelCompetencia =
+      t.nivelPara > t.nivelDe ? t.nivelPara : ((t.nivelDe + 1) as NivelCompetencia);
     setForm({
       competenciaId: t.competenciaId,
       nivelDe: t.nivelDe,
-      nivelPara: t.nivelPara,
+      nivelPara,
       titulo: t.titulo,
       formInput: t.formBaseUrl,
       entryEmailId: t.entryEmailId,
@@ -351,7 +354,12 @@ export default function ProvasTemplatesPage() {
                   <label className="block text-sm text-slate-300 mb-1">Nível De</label>
                   <select
                     value={form.nivelDe}
-                    onChange={(e) => setForm({ ...form, nivelDe: Number(e.target.value) as NivelCompetencia })}
+                    onChange={(e) => {
+                      const newDe = Number(e.target.value) as NivelCompetencia;
+                      const newPara: NivelCompetencia =
+                        form.nivelPara > newDe ? form.nivelPara : ((newDe + 1) as NivelCompetencia);
+                      setForm({ ...form, nivelDe: newDe, nivelPara: newPara });
+                    }}
                     className="w-full px-4 py-2.5 rounded-xl bg-slate-800/80 border border-slate-600/50 text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
                   >
                     {NIVEL_OPTIONS.filter((n) => n < 4).map((n) => (
